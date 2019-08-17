@@ -1,0 +1,31 @@
+{
+  "name": "css-font-units",
+  "author": "dangodev",
+  "version": "0.1.0",
+  "license": "Unlicense",
+  "engines": {
+    "node": ">= 10.0.0"
+  },
+  "repository": {
+    "url": "https://github.com/dangodev/css-font-units"
+  },
+  "scripts": {
+    "build": "npm run lint",
+    "lint": "eslint **/*.js",
+    "measure": "node measureFonts",
+    "start": "npx serve -s .",
+    "update": "node updateFontList"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "chalk": "^2.4.2",
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-prettier": "^3.1.0",
+    "js-yaml": "^3.13.1",
+    "prettier": "^1.18.2",
+    "puppeteer": "^1.19.0"
+  }
+}

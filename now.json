@@ -1,0 +1,9 @@
+{
+  "builds": [
+    { "src": "*.css", "use": "@now/static" },
+    { "src": "*.csv", "use": "@now/static" },
+    { "src": "*.html", "use": "@now/static" },
+    { "src": "*.js", "use": "@now/static" },
+    { "src": "*.png", "use": "@now/static" }
+  ]
+}

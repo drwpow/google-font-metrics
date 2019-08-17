@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Google Font Metrics</title>
+    <link rel="shortcut icon" href="/favicon.png" />
+    <link
+      href="https://fonts.googleapis.com/css?family=DM+Sans:400,700&display=swap"
+      rel="stylesheet"
+    />
+    <link href="/styles.css" rel="stylesheet" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@_drewpowers" />
+    <meta name="twitter:title" content="Google Font Metrics" />
+    <meta name="twitter:description" content="CSS metrics for Google Fonts" />
+    <meta
+      name="twitter:image"
+      content="https://google-font-metrics.powers.now.sh/screenshot.png"
+    />
+    <meta
+      name="og:image"
+      content="https://google-font-metrics.powers.now.sh/screenshot.png"
+    />
+  </head>
+
+  <body>
+    <header class="header">
+      <h1>Google Font Metrics</h1>
+      <p>
+        CSS metrics for Google Fonts. Compiled by
+        <a href="https://pow.rs">Drew Powers</a>. Source
+        <a href="https://github.com/dangodev/google-font-metrics">on GitHub</a>.
+      </p>
+
+      <div class="filter">
+        <label class="filter-label">
+          search by font name
+          <input type="search" class="filter-input" />
+        </label>
+      </div>
+    </header>
+
+    <main role="main">
+      <button class="dialog-trigger">
+        <span class="icon">ℹ︎</span> How do I use this?
+      </button>
+      <table class="table" id="font-data">
+        <thead>
+          <tr class="tr"></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </main>
+    <aside>
+      <dialog class="dialog">
+        <div class="dialog-inner">
+          <dl class="legend">
+            <div class="legend-item">
+              <dt>cap</dt>
+              <dd>
+                <p>
+                  Height of a capital letter with horizontal top & bottom (for
+                  example, an <code>E</code>). Represented as a % of font size.
+                </p>
+                <div class="example">
+                  <code>75%</code> for a <code>16px</code> font will equal
+                  <code>12px</code> in the browser.
+                </div>
+              </dd>
+            </div>
+            <div class="legend-item">
+              <dt>ch</dt>
+              <dd>
+                <p>
+                  Width of the zero (“0”) character in a font (at least, as best
+                  the browser can figure), represented as a ratio to font size.
+                </p>
+                <div class="example">
+                  <code>0.5</code> for a <code>16px</code> font will equal
+                  <code>8px</code> in the browser.
+                </div>
+              </dd>
+            </div>
+            <div class="legend-item">
+              <dt>em</dt>
+              <dd>
+                <p>
+                  A number equal to font size. This is always
+                  <code>1</code>, but it’s shown in this table for completion.
+                </p>
+                <div class="example">
+                  <code>1</code> for a <code>16px</code> font will equal
+                  <code>16px</code> in the browser.
+                </div>
+              </dd>
+            </div>
+            <div class="legend-item">
+              <dt>ex</dt>
+              <dd>
+                <p>
+                  The <em>x-height</em> of the font, represented as a % of cap
+                  height. The closer to 100%, the closer lowercase and uppercase
+                  letters are in height.
+                </p>
+                <div class="example">
+                  <code>75%</code> for a <code>16px</code> will equal
+                  <code>12px</code> in the browser.
+                </div>
+              </dd>
+            </div>
+            <div class="legend-item">
+              <dt>ic</dt>
+              <dd>
+                <p>
+                  The same as <code>ch</code>, but with the “水” character for
+                  East Asian glyphs.
+                </p>
+                <div class="example">
+                  <code>0.5</code> for a <code>16px</code> font will equal
+                  <code>8px</code> in the browser.
+                </div>
+              </dd>
+            </div>
+            <div class="legend-item">
+              <dt>lh</dt>
+              <dd>
+                <p>
+                  Equal to the line-height of the font, represented as a % of
+                  font size.
+                </p>
+                <div class="example">
+                  <code>87.5%</code> for a <code>16px</code> font will equal
+                  <code>14px</code> in the browser.
+                </div>
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </dialog>
+    </aside>
+
+    <script>
+      // No webpack? NANI??
+
+      // Settings
+      const FONT_SIZE = 800; // measurements based on 800px font size
+
+      // Methods
+      function percent(num) {
+        return `${(num * 100).toFixed(2)}%`
+          .replace(/.00/, '')
+          .replace(/.0$/, '');
+      }
+
+      function format(columns) {
+        return columns.map((column, index) => {
+          switch (window.tableHeadings[index]) {
+            // cap units are a ratio of font size
+            case 'cap':
+              return percent(parseFloat(column) / FONT_SIZE);
+            // ch units are a ratio of font size
+            case 'ch':
+              return (parseFloat(column) / FONT_SIZE)
+                .toFixed(2)
+                .replace(/0$/, '');
+            // em unites are a ratio of font size
+            case 'em':
+              return parseFloat(column) / FONT_SIZE;
+            // ex units are a % of font size
+            case 'ex':
+              return percent(parseFloat(column) / FONT_SIZE);
+            // return a link to the GF page
+            case 'font family':
+              return `<a href="https://fonts.google.com/specimen/${column.replace(
+                / /g,
+                '+'
+              )}" target="_blank" rel="noopener noreferrer">${column}</a>`;
+            // lh is a % of font size
+            case 'ic':
+              return (parseFloat(column) / FONT_SIZE).toFixed(2);
+            // lh is a % of font size
+            case 'lh':
+              return (parseFloat(column) / FONT_SIZE).toFixed(2);
+            case 'monospace':
+              return column === 'true' ? '✔️' : '';
+            default:
+              if (column === 'undefined') {
+                return '';
+              }
+              return column;
+          }
+        });
+      }
+
+      // Split CSV line into arrays
+      function parseLine(line) {
+        return line
+          .replace(/^"/, '')
+          .replace(/"$/, '')
+          .split('","')
+          .map(col => (col.indexOf('-') === -1 ? parseFloat(col) || col : col));
+      }
+
+      // Table rendering
+      function render() {
+        // Get table
+        const table = document.querySelector('.table');
+        const thead = table.querySelector('thead');
+        const tbody = table.querySelector('tbody');
+
+        // sort data
+        let sortedData = [...window.tableData];
+        if (window.tableSortBy) {
+          const colIndex = window.tableHeadings.indexOf(window.tableSortBy);
+          if (colIndex !== -1) {
+            sortedData.sort((rowA, rowB) => {
+              const colA = rowA[colIndex];
+              const colB = rowB[colIndex];
+
+              if (typeof colA === 'number') {
+                return window.tableSortDirection === 'descending'
+                  ? colB - colA
+                  : colA - colB;
+              }
+              if (typeof colA === 'string') {
+                // empty values move to back regardless of direction
+                if (colA === '') return 1;
+                if (colB === '') return -1;
+
+                return window.tableSortDirection === 'descending'
+                  ? colB.localeCompare(colA)
+                  : colA.localeCompare(colB);
+              }
+              return 0;
+            });
+          } else {
+            console.error(
+              `Can’t find column “${window.tableSortBy}” to sort by`
+            );
+            window.tableSortBy = undefined;
+          }
+        }
+
+        // filter
+        if (window.tableFilter) {
+          sortedData = sortedData.filter(
+            ([name]) => name.toLowerCase().indexOf(window.tableFilter) !== -1
+          );
+        }
+
+        // Update headings
+        thead.innerHTML = `
+          <tr class="tr">
+            ${window.tableHeadings
+              .map(
+                heading =>
+                  `<th class="th"${
+                    window.tableSortBy && window.tableSortBy === heading
+                      ? ` aria-sort="${window.tableSortDirection}"`
+                      : ''
+                  }>${heading}</th>`
+              )
+              .join('\n')}
+          </tr>
+        `;
+
+        // Update body
+        tbody.innerHTML = sortedData
+          .map(
+            row =>
+              `<tr class="tr"><td class="td">${format(row).join(
+                '</td><td class="td">'
+              )}</td></tr>`
+          )
+          .join('\n');
+
+        // bind click events to headings
+        document
+          .querySelectorAll('.th')
+          .forEach(el => el.addEventListener('click', sortTable));
+      }
+
+      fetch('/font-data.csv').then(async response => {
+        const csv = await response.text();
+        const [header, ...data] = csv.split('\n');
+
+        window.tableHeadings = parseLine(header);
+        window.tableData = data.map(row => parseLine(row));
+
+        render();
+      });
+
+      // Modal
+      const modal = document.querySelector('.dialog');
+
+      function showModal() {
+        modal.setAttribute('open', true);
+      }
+
+      function hideModal() {
+        modal.removeAttribute('open');
+      }
+
+      document
+        .querySelector('.dialog-trigger')
+        .addEventListener('click', showModal);
+      document.querySelector('.dialog').addEventListener('click', hideModal);
+      document
+        .querySelector('.dialog-inner')
+        .addEventListener('click', e => e.stopPropagation());
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+          hideModal();
+        }
+      });
+
+      // Filter / search
+      function filter(e) {
+        const search = e.target.value.toLowerCase();
+        if (search.length) {
+          window.tableFilter = search;
+        } else {
+          window.tableFilter = undefined;
+        }
+        render();
+      }
+
+      document.querySelector('.filter-input').addEventListener('keyup', filter);
+
+      // Sort
+      function sortTable(e) {
+        const stateMachine = {
+          none: 'ascending',
+          ascending: 'descending',
+          descending: 'none',
+        };
+
+        const el = e.target;
+        const state = el.getAttribute('aria-sort') || 'none';
+        const nextState = stateMachine[state];
+
+        window.tableSortDirection = nextState;
+        window.tableSortBy = el.innerHTML;
+        if (nextState === 'none') {
+          window.tableSortBy = undefined;
+        }
+        render();
+      }
+    </script>
+  </body>
+</html>
